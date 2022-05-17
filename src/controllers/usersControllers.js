@@ -1,4 +1,5 @@
 import users from "../models/User.js";
+import bcrypt from "bcrypt";
 
 class UserController {
     static getUsers = (req, res) => {
@@ -21,8 +22,10 @@ class UserController {
         })
     }
 
-    static createUser = (req, res) => {
-        const user = new users(req.body);
+    static createUser = async (req, res) => {
+        const user = new users(req.body);   
+
+        user.password = await this.encrypt(user.password)
 
         user.save((error) => {
             if(error) {
@@ -41,6 +44,13 @@ class UserController {
                 })
             }
         })
+    }
+
+
+    static encrypt = (password) => {
+        const custo = 12;
+
+        return bcrypt.hash(password, custo)
     }
 }
 
